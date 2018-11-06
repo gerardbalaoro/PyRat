@@ -10,7 +10,7 @@ s = socket.socket()
 s.bind((HOST,PORT))
 s.listen(1)
 
-print('[.] Waiting for Client')
+print(f'[.] Listening to {HOST}:{PORT}')
 
 client, a = s.accept()
 

