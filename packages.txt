@@ -1,1 +1,2 @@
 terminaltables
+pyinstaller
