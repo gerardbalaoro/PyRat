@@ -1,5 +1,5 @@
 from RevShell import Client
-import json, os.path, base64
+import json, os.path
 
 if __name__ == '__main__':
 
