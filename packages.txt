@@ -1,2 +1,4 @@
 terminaltables
 pyinstaller
+pygame
+cx_Freeze
