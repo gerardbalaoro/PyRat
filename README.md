@@ -2,7 +2,7 @@
 <p align="center">A Fully Undetectable Python 3 Reverse Shell Script</p>
 
 <hr>
-<h2 align="center">Disclaimer</h2>
+<h3 align="center">Disclaimer</h3>
 <p align="center">
 Developed by <b>Gerard Ian M. Balaoro</b><br>
 In Partial Fulfillment on the Requirements for the Subject<br>
@@ -80,7 +80,7 @@ Run `pyinstaller` and copy the assets folder to the destination:
 
 ```bat
 pyinstaller flappy.py -F -y -i assets/icons/flappy.ico --distpath "dist/FlappyBird" --name "flappybird" --windowed
-xcopy "assets" "dist/FlappyBird/assets" /E /S /Y**
+xcopy "assets" "dist/FlappyBird/assets" /E /S /Y
 ```
 
 Once done, we can now see our Trojan application inside the `build/FlappyBird` directory. All there's left to do is to change the configuration settings, compress this to a **zip** file and send it to a victim.
