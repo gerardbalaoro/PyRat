@@ -1,6 +1,12 @@
-# RevShell
+<h1 align="center">PyRat: ReverseShell</h1>
+<p align="center">A Fully Undetectable Python 3 Reverse Shell Script</p>
 
-A Simple Python 3 Reverse Shell Script
+<hr>
+
+> ## Disclaimer
+>
+> The author intended this script to be used for educational and research puposes only.
+
 
 
 ## Usage
@@ -10,13 +16,14 @@ A Simple Python 3 Reverse Shell Script
    ```
    pip install -r packages.txt
    ```
+
 - Run the server script.
 
    ```
    python server.py --port 58777
    ```
 
-- Configure server settings inside **config.json**.
+- Configure server settings inside **config.ini**.
 
   ```json
   {
@@ -34,13 +41,14 @@ A Simple Python 3 Reverse Shell Script
 - Server script
 
   ```bash
-  pyinstaller server.py -F -y -i shell.icon  
+  pyinstaller server.py -F -y -i shell.ico --name "RevShellServer" --specpath "build/" 
   ```
   
 - Client script, use the `windowed` option to prevent the script from launching a command window
 
-  ```
-  pyinstaller client.py -F -y -i shell.icon --windowed
+  ```bash
+  pyinstaller client.py -F -y -i gear.ico --name "RevShellClient" --specpath "build/"
+  pyinstaller client.py -F -y -i gear.ico --name "RevShellPayload" --specpath "build/" --windowed
   ```
 
 
