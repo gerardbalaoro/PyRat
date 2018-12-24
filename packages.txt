@@ -1,3 +1,8 @@
-terminaltables
-pyinstaller
-pygame*
+altgraph==0.16.1
+future==0.17.1
+macholib==1.11
+pefile==2018.8.8
+pygame==1.9.4
+PyInstaller==3.4
+pywin32-ctypes==0.2.0
+terminaltables==3.1.0
